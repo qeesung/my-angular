@@ -4,7 +4,7 @@
   "description": "qeesung's own angular js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "karma start karma.conf.js"
   },
   "keywords": [
     "angular"
@@ -20,7 +20,10 @@
     "jshint": "^2.9.2",
     "karma": "^1.1.2",
     "karma-chrome-launcher": "^1.0.1",
-    "karma-jasmine": "^1.0.2"
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.1"
   },
   "dependencies": {
     "gulp": "^3.9.1",
