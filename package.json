@@ -1,0 +1,29 @@
+{
+  "name": "my-angular",
+  "version": "1.0.0",
+  "description": "qeesung's own angular js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "angular"
+  ],
+  "author": "qeesung",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp-clean": "^0.3.2",
+    "gulp-jshint": "^2.0.1",
+    "gulp-jslint": "^1.0.1",
+    "gulp-karma": "0.0.5",
+    "jasmine": "^2.4.1",
+    "jshint": "^2.9.2",
+    "karma": "^1.1.2",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-jasmine": "^1.0.2"
+  },
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jshint-html-reporter": "^0.1.3"
+  }
+}
