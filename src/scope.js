@@ -15,10 +15,10 @@ Scope.prototype.$watch = function (watchFn, listenerFn) {
     var self = this;
     var watcher = {
         watchFn: watchFn,
-        listenerFn:listenerFn
+        listenerFn:listenerFn,
+        last:function initWatchVal(){} // function in the js is unique
     };
 
-    watcher.last = null;
     self.$$watchers.push(watcher);
 };
 
