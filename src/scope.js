@@ -7,5 +7,23 @@
  */
 
 function Scope() {
-
+    this.$$watchers = [];
 }
+
+
+Scope.prototype.$watch = function (watchFn, listenerFn) {
+    var self = this;
+    var watcher = {
+        watchFn: watchFn,
+        listenerFn:listenerFn
+    };
+
+    self.$$watchers.push(watcher);
+};
+
+
+Scope.prototype.$digest = function () {
+    _.forEach(this.$$watchers, function (watcher) {
+        watcher.listenerFn();
+    });
+};
