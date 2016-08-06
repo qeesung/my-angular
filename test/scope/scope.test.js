@@ -29,5 +29,36 @@ describe("Scope", function () {
 
             expect(listenerFn).toHaveBeenCalled();
         });
+
+        it("call the listenfn when the watched value changed", function () {
+            scope.someValue = 'a';
+            scope.counter = 0;
+
+            function watchFn(scope, property) {
+                property = 'someValue';
+                return scope[property];
+            }
+
+            function listenerFn(newValue, oldValue, scope) {
+                scope.counter++;
+            }
+
+            scope.$watch(watchFn, listenerFn);
+
+            // test the count
+            expect(scope.counter).toBe(0);
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            scope.someValue = 'b';
+            expect(scope.counter).toBe(1);
+
+            scope.$digest();
+            expect(scope.counter).toBe(2);
+        });
     });
 });

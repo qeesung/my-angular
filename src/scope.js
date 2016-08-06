@@ -18,12 +18,20 @@ Scope.prototype.$watch = function (watchFn, listenerFn) {
         listenerFn:listenerFn
     };
 
+    watcher.last = null;
     self.$$watchers.push(watcher);
 };
 
 
 Scope.prototype.$digest = function () {
+    var self = this;
+    var newValue, oldValue;
     _.forEach(this.$$watchers, function (watcher) {
-        watcher.listenerFn();
+        newValue = watcher.watchFn(self);
+        oldValue = watcher.last;
+        if(newValue !== oldValue){ // here only compare the object reference, not the value
+            watcher.last = newValue;
+            watcher.listenerFn(newValue, oldValue, self);
+        }
     });
 };
