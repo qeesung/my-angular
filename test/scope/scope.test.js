@@ -77,5 +77,24 @@ describe("Scope", function () {
             scope.$digest();
             expect(scope.counter).toBe(1);
         });
+
+        it("calls listener with new value as old value the first time", function () {
+            scope.someValue = 123;
+            var oldValueGiven =0;
+
+            function watchFn(scope, property) {
+                property = 'someValue';
+                return scope[property];
+            }
+
+            function listenerFn(newValue, oldValue, scope) {
+                oldValueGiven = oldValue;
+            }
+
+            scope.$watch(watchFn, listenerFn);
+
+            scope.$digest();
+            expect(oldValueGiven).toBe(123);
+        });
     });
 });

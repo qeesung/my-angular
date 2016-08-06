@@ -10,13 +10,16 @@ function Scope() {
     this.$$watchers = [];
 }
 
+function initWatchVal() {
+
+}
 
 Scope.prototype.$watch = function (watchFn, listenerFn) {
     var self = this;
     var watcher = {
         watchFn: watchFn,
         listenerFn:listenerFn,
-        last:function initWatchVal(){} // function in the js is unique
+        last: initWatchVal
     };
 
     self.$$watchers.push(watcher);
@@ -31,7 +34,7 @@ Scope.prototype.$digest = function () {
         oldValue = watcher.last;
         if(newValue !== oldValue){ // here only compare the object reference, not the value
             watcher.last = newValue;
-            watcher.listenerFn(newValue, oldValue, self);
+            watcher.listenerFn(newValue, (oldValue === initWatchVal ? newValue: oldValue), self);
         }
     });
 };
