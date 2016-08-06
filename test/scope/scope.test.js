@@ -96,5 +96,14 @@ describe("Scope", function () {
             scope.$digest();
             expect(oldValueGiven).toBe(123);
         });
+
+        it("watch function will be invoked whenever the $digest", function () {
+            var watchFn = jasmine.createSpy().and.returnValue("somevalue");
+            scope.$watch(watchFn/** omit the listener function here */);
+
+            scope.$digest();
+
+            expect(watchFn).toHaveBeenCalled();
+        });
     });
 });

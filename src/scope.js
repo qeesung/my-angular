@@ -18,7 +18,7 @@ Scope.prototype.$watch = function (watchFn, listenerFn) {
     var self = this;
     var watcher = {
         watchFn: watchFn,
-        listenerFn:listenerFn,
+        listenerFn:listenerFn || function(){},
         last: initWatchVal
     };
 
