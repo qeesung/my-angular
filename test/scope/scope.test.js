@@ -105,5 +105,36 @@ describe("Scope", function () {
 
             expect(watchFn).toHaveBeenCalled();
         });
+
+        it("triggers chained watchers in the same digest", function () {
+            scope.name = "abc";
+            scope.testValue = "";// use this value to check if upperName is chenged
+
+            // watch the upperName property
+            scope.$watch(function (scope) {
+                return scope.upperName;
+            },function (newValue, oldValue, scope) {
+                if(newValue) // first time the new value is undefined
+                    scope.testValue = newValue.substring(0,1)+"-";
+            });
+
+            // watch the name property
+            scope.$watch(function (scope) {
+                return scope.name;
+            },function (newValue, oldValue, scope) {
+                // here change the nameUppper property
+                scope.upperName = newValue.toUpperCase();
+            });
+
+
+            scope.$digest();
+            expect(scope.testValue).toBe('A-');
+
+            scope.name = "def";
+            scope.$digest();
+            expect(scope.testValue).toBe('D-');
+
+        });
+
     });
 });
