@@ -46,8 +46,12 @@ Scope.prototype.$$digestOnce = function () {
 Scope.prototype.$digest = function () {
     var self = this;
     var dirty = false;
+    var ttl = 10;
     do{
         dirty = self.$$digestOnce();
+        if(dirty && !(ttl--)){
+            throw "10 digest iterations reached";
+        }
     }while(dirty);
 
 };
