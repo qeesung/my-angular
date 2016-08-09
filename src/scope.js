@@ -8,6 +8,7 @@
 
 function Scope() {
     this.$$watchers = [];
+    this.$$lastDirtyWatch = null;
 }
 
 function initWatchVal() {
@@ -23,6 +24,7 @@ Scope.prototype.$watch = function (watchFn, listenerFn) {
     };
 
     self.$$watchers.push(watcher);
+    self.$$lastDirtyWatch = null;
 };
 
 
@@ -34,9 +36,13 @@ Scope.prototype.$$digestOnce = function () {
         newValue = watcher.watchFn(self);
         oldValue = watcher.last;
         if(newValue !== oldValue){ // here only compare the object reference, not the value
+            self.$$lastDirtyWatch = watcher;
             watcher.last = newValue;
             watcher.listenerFn(newValue, (oldValue === initWatchVal ? newValue: oldValue), self);
             dirty = true;
+        }
+        else if(self.$$lastDirtyWatch === watcher){
+            return false;
         }
     });
     return dirty;
@@ -47,6 +53,7 @@ Scope.prototype.$digest = function () {
     var self = this;
     var dirty = false;
     var ttl = 10;
+    this.$$lastDirtyWatch = null;
     do{
         dirty = self.$$digestOnce();
         if(dirty && !(ttl--)){
