@@ -182,5 +182,23 @@ describe("Scope", function () {
             expect(watchExecutions).toBe(301);
         });
 
+        it("compares base on value if enabled", function () {
+            scope.baseArray = [1,2];
+            var changeCounter = 0 ;
+
+            scope.$watch(function (scope) {
+                return scope.baseArray;
+            },function (newValue, oldValue, scope) {
+                changeCounter++;
+            },true/** true enable the base value compare */);
+
+            scope.$digest();
+            expect(changeCounter).toBe(1);
+
+            scope.baseArray.push(3); // change the value , not change the reference
+            scope.$digest();
+            expect(changeCounter).toBe(2);
+        });
+
     });
 });

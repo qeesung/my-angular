@@ -15,12 +15,13 @@ function initWatchVal() {
 
 }
 
-Scope.prototype.$watch = function (watchFn, listenerFn) {
+Scope.prototype.$watch = function (watchFn, listenerFn, baseValue) {
     var self = this;
     var watcher = {
         watchFn: watchFn,
         listenerFn:listenerFn || function(){},
-        last: initWatchVal
+        last: initWatchVal,
+        isBaseValue: !!baseValue || false
     };
 
     self.$$watchers.push(watcher);
@@ -35,9 +36,9 @@ Scope.prototype.$$digestOnce = function () {
     _.forEach(this.$$watchers, function (watcher) {
         newValue = watcher.watchFn(self);
         oldValue = watcher.last;
-        if(newValue !== oldValue){ // here only compare the object reference, not the value
+        if(!self.$$areEqual(newValue, oldValue, watcher.isBaseValue)){ // here only compare the object reference, not the value
             self.$$lastDirtyWatch = watcher;
-            watcher.last = newValue;
+            watcher.last = (watcher.isBaseValue ? _.cloneDeep(newValue): newValue); // if not deep clone the newValue, the newValue and oldValue will always equal, because they are same object
             watcher.listenerFn(newValue, (oldValue === initWatchVal ? newValue: oldValue), self);
             dirty = true;
         }
@@ -61,4 +62,13 @@ Scope.prototype.$digest = function () {
         }
     }while(dirty);
 
+};
+
+Scope.prototype.$$areEqual = function (newValue, oldValue, baseValue) {
+    if(!!baseValue){
+        return _.isEqual(newValue, oldValue);
+    }
+    else{
+        return newValue === oldValue;
+    }
 };
