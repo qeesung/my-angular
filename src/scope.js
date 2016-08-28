@@ -78,3 +78,25 @@ Scope.prototype.$$areEqual = function (newValue, oldValue, baseValue) {
 Scope.prototype.$eval = function (expression, args) {
     return expression(this, args);
 };
+
+/**
+ * take from the angular official website
+ * Scope's $apply() method transitions through the following stages:
+ *
+ *  1. The expression is executed using the $eval() method.
+ *  2. Any exceptions from the execution of the expression are forwarded to the $exceptionHandler service.
+ *  3. The watch listeners are fired immediately after the expression was executed using the $digest() method.
+ */
+
+Scope.prototype.$apply = function(expression, args){
+    var self = this;
+    try{
+        self.$eval(expression, args);
+    }
+    catch(e){
+        // ignore the exception
+    }
+    finally{
+        self.$digest();
+    }
+};
