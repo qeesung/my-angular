@@ -217,5 +217,24 @@ describe("Scope", function () {
             expect(scope.counter).toBe(1);// NaN is not equal Nan itseft forever  need to fix this issue
         });
 
+        it("executes $eval'ed function and returns result", function () {
+            scope.aValue = 1;
+
+            var result = scope.$eval(function (scope) {
+                return scope.aValue;
+            });
+
+            expect(result).toBe(1);
+        });
+
+        it('executes $eval.ed function that with args and returns result', function () {
+            scope.aValue = 1;
+
+            var result = scope.$eval(function (scope, arg) {
+                return scope.aValue + arg;
+            },2);
+
+            expect(result).toBe(3);
+        });
     });
 });

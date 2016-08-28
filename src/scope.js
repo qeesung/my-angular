@@ -74,3 +74,7 @@ Scope.prototype.$$areEqual = function (newValue, oldValue, baseValue) {
              isNaN(newValue) && isNaN(oldValue)) ;
     }
 };
+
+Scope.prototype.$eval = function (expression, args) {
+    return expression(this, args);
+};
