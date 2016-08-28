@@ -69,6 +69,8 @@ Scope.prototype.$$areEqual = function (newValue, oldValue, baseValue) {
         return _.isEqual(newValue, oldValue);
     }
     else{
-        return newValue === oldValue;
+        return newValue === oldValue ||
+            (typeof newValue === 'number' && typeof oldValue === 'number' && // need to check the type,because the js object isNaN(<object>) is true
+             isNaN(newValue) && isNaN(oldValue)) ;
     }
 };
