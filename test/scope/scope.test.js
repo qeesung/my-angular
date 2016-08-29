@@ -255,5 +255,26 @@ describe("Scope", function () {
             });
             expect(scope.counter).toBe(2);// anguarl will notice the change
         });
+
+        it("execute $evalAsync'ed function later in the same cycle", function () {
+            scope.aValue = [1,2,3];
+            scope.asyncEvaluated = false;
+            scope.asyncEvaluatedImmediately = false;
+
+            scope.$watch(function (scope) {
+                return scope.aValue;
+            },function (newValue, oldValue, scope) {
+                // add a new async function here
+                scope.$evalAsync(function (scope) {
+                    scope.asyncEvaluated = true; // this code will be executed in the same digest circle
+                });
+
+                scope.asyncEvaluatedImmediately = scope.asyncEvaluated;// change the status immediately
+            });
+
+            scope.$digest();
+            expect(scope.asyncEvaluated).toBe(true);
+            expect(scope.asyncEvaluatedImmediately).toBe(false);
+        });
     });
 });
