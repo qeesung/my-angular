@@ -62,7 +62,8 @@ Scope.prototype.$digest = function () {
             asyncTask.scope.$eval(asyncTask.expression);
         }
         dirty = self.$$digestOnce();
-        if(dirty && !(ttl--)){
+        // after 10 times , if the dirty is still not clean or async queue still has tasks, then throw a exception
+        if((dirty || self.$$asyncQueue.length) && !(ttl--)){
             throw "10 digest iterations reached";
         }
     }while(dirty || this.$$asyncQueue.length);

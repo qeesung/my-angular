@@ -315,5 +315,22 @@ describe("Scope", function () {
             scope.$digest();
             expect(scope.asyncEvaluatedTimes).toBe(2);
         });
+
+        it("eventually halts $evalAsyncs added by watches", function () {
+            scope.aValue = [1,2,3];
+
+            scope.$watch(function (scope) {
+                scope.$evalAsync(function (scope) {
+                    // doing nothing here, just push the task
+                });
+                return scope.aValue;
+            },function (newValue, oldValue, scope) {
+
+            });
+
+            expect(function () {
+                scope.$digest();
+            }).toThrow();
+        });
     });
 });
