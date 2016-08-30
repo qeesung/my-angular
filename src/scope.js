@@ -65,7 +65,7 @@ Scope.prototype.$digest = function () {
         if(dirty && !(ttl--)){
             throw "10 digest iterations reached";
         }
-    }while(dirty);
+    }while(dirty || this.$$asyncQueue.length);
 
 };
 
