@@ -116,7 +116,17 @@ Scope.prototype.$apply = function(expression, args){
  * push a new express into the async queue
  */
 Scope.prototype.$evalAsync = function (expression) {
-    this.$$asyncQueue.push({scope:this,expression:expression});
+    // in order to schedule a new digeest circle whenever call this funciton
+    // we need shcedule the function expression in next time tick mannaully
+    var self = this;
+    if(!self.$$phase && !self.$$asyncQueue.length){
+        setTimeout(function () {
+            // here will start a digest circle
+            if(self.$$asyncQueue.length)
+                self.$digest(); // this digest will be invoke in next tick
+        }, 0);
+    }
+    this.$$asyncQueue.push({scope:this,expression:expression}); // a new async task will be scheduled in this tick
 };
 
 
