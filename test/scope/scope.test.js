@@ -432,6 +432,10 @@ describe("Scope", function () {
                 scope.counter++;
             });
 
+            expect(scope.counter).toBe(0);
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
             scope.$applyAsync(function (scope) {
                 scope.aValue ='b';
             });
@@ -440,14 +444,46 @@ describe("Scope", function () {
                 scope.aValue ='c';
             });
 
-            expect(scope.counter).toBe(0);
-            scope.$digest();
-            expect(scope.counter).toBe(1);
-
             setTimeout(function () {
                 expect(scope.counter).toBe(2);// not 3
                 done();
             },100);
+        });
+
+        it("cancels and flushes $applyAsync if digested first", function (done) {
+            scope.aValue = 'a';
+            scope.counter = 0;
+
+            scope.$watch(function (scope) {
+                return scope.aValue;
+            },function (newValue, oldValue, scope) {
+                scope.counter++;
+            });
+
+            expect(scope.counter).toBe(0);
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            scope.$applyAsync(function (scope) {
+                scope.aValue ='b';
+            });
+
+            expect(scope.counter).toBe(1);
+
+            scope.$applyAsync(function (scope) {
+                scope.aValue ='c';
+            });
+
+            expect(scope.counter).toBe(1);
+
+            scope.$digest();// this digest will flush all the applyAsync'ed expression
+            expect(scope.counter).toBe(2);
+
+            setTimeout(function () {
+                expect(scope.counter).toBe(2);
+                done();
+            },100);
+
         });
     });
 });

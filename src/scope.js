@@ -60,6 +60,12 @@ Scope.prototype.$digest = function () {
     var ttl = 10;
     this.$$lastDirtyWatch = null;
     this.$beginPhase("$digest");
+
+    if(self.$$asyncApplyId){
+        clearTimeout(self.$$asyncApplyId);
+        self.$$flushApplyAsync();
+    }
+
     do{
         while(self.$$asyncQueue.length > 0){
             var asyncTask = self.$$asyncQueue.shift();
@@ -166,12 +172,16 @@ Scope.prototype.$applyAsync = function (expression) {
     if(this.$$asyncApplyId === null)
     {
         this.$$asyncApplyId =  setTimeout(function () {
-            self.$apply(function () {
-                while(self.$$asyncApplyQueue.length != 0){
-                    self.$$asyncApplyQueue.shift()();
-                }
-                this.$$asyncApplyId = null;
-            });
+            self.$apply(_.bind(self.$$flushApplyAsync, self));
         },0);
     }
+};
+
+
+Scope.prototype.$$flushApplyAsync = function () {
+    var self = this;
+    while(self.$$asyncApplyQueue.length){
+        self.$$asyncApplyQueue.shift()();
+    };
+    self.$$asyncApplyId = null;
 };
