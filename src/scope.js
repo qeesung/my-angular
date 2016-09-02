@@ -10,6 +10,7 @@ function Scope() {
     this.$$watchers = [];
     this.$$lastDirtyWatch = null;
     this.$$asyncQueue = [];
+    this.$$phase = null;
 }
 
 function initWatchVal() {
@@ -56,6 +57,7 @@ Scope.prototype.$digest = function () {
     var dirty = false;
     var ttl = 10;
     this.$$lastDirtyWatch = null;
+    this.$beginPhase("$digest");
     do{
         while(self.$$asyncQueue.length > 0){
             var asyncTask = self.$$asyncQueue.shift();
@@ -68,6 +70,7 @@ Scope.prototype.$digest = function () {
         }
     }while(dirty || this.$$asyncQueue.length);
 
+    this.$clearPhase();
 };
 
 Scope.prototype.$$areEqual = function (newValue, oldValue, baseValue) {
@@ -97,6 +100,7 @@ Scope.prototype.$eval = function (expression, args) {
 Scope.prototype.$apply = function(expression, args){
     var self = this;
     try{
+        this.$beginPhase("$apply");
         self.$eval(expression, args);
     }
     catch(e){
@@ -104,6 +108,7 @@ Scope.prototype.$apply = function(expression, args){
     }
     finally{
         self.$digest();
+        this.$clearPhase();
     }
 };
 
@@ -112,4 +117,20 @@ Scope.prototype.$apply = function(expression, args){
  */
 Scope.prototype.$evalAsync = function (expression) {
     this.$$asyncQueue.push({scope:this,expression:expression});
+};
+
+
+/**
+ * define some interface to deal the $$phase variable
+ */
+
+Scope.prototype.$beginPhase = function (_phase) {
+    if(_phase === null)
+        throw this.$$phase + " already in progress";
+    else
+        this.$$phase = _phase;
+};
+
+Scope.prototype.$clearPhase = function () {
+    this.$$phase = null;
 };

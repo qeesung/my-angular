@@ -332,5 +332,26 @@ describe("Scope", function () {
                 scope.$digest();
             }).toThrow();
         });
+
+        it("has a $$scope field whose value is the current digest phase", function () {
+            scope.aValue = [1,2,3];
+            scope.phaseInWatchFunction = null;
+            scope.phaseInListenerFunction = null;
+            scope.phaseInApplyFunction = null;
+
+            scope.$watch(function (scope) {
+                scope.phaseInWatchFunction = scope.$$phase;
+            },function (newValue, oldValue, scope) {
+                scope.phaseInListenerFunction = scope.$$phase;
+            });
+
+            scope.$apply(function (scope) {
+                scope.phaseInApplyFunction = scope.$$phase;
+            });
+
+            expect(scope.phaseInWatchFunction).toBe("$digest");
+            expect(scope.phaseInListenerFunction).toBe("$digest");
+            expect(scope.phaseInApplyFunction).toBe("$apply");
+        });
     });
 });
