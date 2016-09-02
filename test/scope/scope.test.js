@@ -375,5 +375,52 @@ describe("Scope", function () {
                 done();
             },100);
         });
+
+        it("scope's $applyAsync will be invoked in next js tick", function (done) {
+            scope.aValue = 'a';
+            scope.counter = 0;
+
+            scope.$watch(function (scope) {
+                return scope.aValue;
+            },function (newValue, oldValue, scope) {
+                scope.counter ++;
+            });
+
+            expect(scope.counter).toBe(0);
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            scope.$applyAsync(function (scope) { // this function will be executed in next tick
+                scope.aValue = "b";
+            });
+
+            expect(scope.counter).toBe(1);
+
+            setTimeout(function () {
+                expect(scope.counter).toBe(2);
+                done();
+            },100);
+        });
+
+        it("never executes $applyAsync'ed function in the same digest circle", function (done) {
+            scope.aValue = 'a';
+            scope.executedInSameCircle = false;
+
+            scope.$watch(function (scope) {
+                return scope.aValue;
+            }, function (newValue, oldValue, scope) {
+                // here push a new applyAsync function
+                scope.$applyAsync(function (scope) {
+                    scope.executedInSameCircle = true;
+                });
+            });
+
+            scope.$digest();
+            expect(scope.executedInSameCircle).toBe(false);
+            setTimeout(function () {
+                expect(scope.executedInSameCircle).toBe(true);
+                done();
+            },100);
+        });
     });
 });

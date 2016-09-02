@@ -10,6 +10,7 @@ function Scope() {
     this.$$watchers = [];
     this.$$lastDirtyWatch = null;
     this.$$asyncQueue = [];
+    this.$$asyncApplyQueue = [];
     this.$$phase = null;
 }
 
@@ -143,4 +144,27 @@ Scope.prototype.$beginPhase = function (_phase) {
 
 Scope.prototype.$clearPhase = function () {
     this.$$phase = null;
+};
+
+/**
+ * those notes from angular official website
+ * $applyAsync([exp]);
+ *   Schedule the invocation of $apply to occur at a later time. The actual time difference varies across browsers, but is typically around ~10 milliseconds.
+ *   This can be used to queue up multiple expressions which need to be evaluated in the same digest., here such as multiple http requests , and get the multiple http
+ *   responses, here we can push all functions that deal http responses to a same applyAsync
+ */
+
+Scope.prototype.$applyAsync = function (expression) {
+    var self = this;
+    self.$$asyncApplyQueue.push(function () {
+        self.$eval(expression);
+    });
+    // defer those functions exection in next js tick
+    setTimeout(function () {
+        self.$apply(function () {
+            while(self.$$asyncApplyQueue.length != 0){
+                self.$$asyncApplyQueue.shift()();
+            }
+        });
+    },0);
 };
