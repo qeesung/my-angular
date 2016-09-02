@@ -422,5 +422,32 @@ describe("Scope", function () {
                 done();
             },100);
         });
+
+        it("only once $digest circle if we push multi applyAsync expression", function (done) {
+            scope.aValue = 'a';
+            scope.counter = 0;
+            scope.$watch(function (scope) {
+                return scope.aValue;
+            }, function (newValue, oldValue, scope) {
+                scope.counter++;
+            });
+
+            scope.$applyAsync(function (scope) {
+                scope.aValue ='b';
+            });
+
+            scope.$applyAsync(function (scope) {
+                scope.aValue ='c';
+            });
+
+            expect(scope.counter).toBe(0);
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            setTimeout(function () {
+                expect(scope.counter).toBe(2);// not 3
+                done();
+            },100);
+        });
     });
 });

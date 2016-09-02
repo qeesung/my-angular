@@ -11,6 +11,7 @@ function Scope() {
     this.$$lastDirtyWatch = null;
     this.$$asyncQueue = [];
     this.$$asyncApplyQueue = [];
+    this.$$asyncApplyId = null;
     this.$$phase = null;
 }
 
@@ -160,11 +161,17 @@ Scope.prototype.$applyAsync = function (expression) {
         self.$eval(expression);
     });
     // defer those functions exection in next js tick
-    setTimeout(function () {
-        self.$apply(function () {
-            while(self.$$asyncApplyQueue.length != 0){
-                self.$$asyncApplyQueue.shift()();
-            }
-        });
-    },0);
+    // all pushed expression will be executed in same $apply function
+    // and only once $digest would be executed
+    if(this.$$asyncApplyId === null)
+    {
+        this.$$asyncApplyId =  setTimeout(function () {
+            self.$apply(function () {
+                while(self.$$asyncApplyQueue.length != 0){
+                    self.$$asyncApplyQueue.shift()();
+                }
+                this.$$asyncApplyId = null;
+            });
+        },0);
+    }
 };
