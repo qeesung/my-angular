@@ -74,8 +74,13 @@ Scope.prototype.$digest = function () {
 
     do{
         while(self.$$asyncQueue.length > 0){
-            var asyncTask = self.$$asyncQueue.shift();
-            asyncTask.scope.$eval(asyncTask.expression);
+            try{
+                var asyncTask = self.$$asyncQueue.shift();
+                asyncTask.scope.$eval(asyncTask.expression);
+            }
+            catch(e){
+                console.log(e);
+            }
         }
         dirty = self.$$digestOnce();
         // after 10 times , if the dirty is still not clean or async queue still has tasks, then throw a exception
@@ -85,7 +90,12 @@ Scope.prototype.$digest = function () {
     }while(dirty || this.$$asyncQueue.length);
 
     while(self.$$postDigestQueue.length){
-        self.$$postDigestQueue.shift()();
+        try{
+            self.$$postDigestQueue.shift()();
+        }
+        catch(e){
+            console.log(e);
+        }
     }
     this.$clearPhase();
 };
@@ -190,7 +200,12 @@ Scope.prototype.$applyAsync = function (expression) {
 Scope.prototype.$$flushApplyAsync = function () {
     var self = this;
     while(self.$$asyncApplyQueue.length){
-        self.$$asyncApplyQueue.shift()();
+        try{
+            self.$$asyncApplyQueue.shift()();
+        }
+        catch(e){
+            console.log(e);
+        }
     };
     self.$$asyncApplyId = null;
 };
