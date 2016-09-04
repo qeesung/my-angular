@@ -485,5 +485,44 @@ describe("Scope", function () {
             },100);
 
         });
+
+        it("runs a $$postDigest function after each digest", function () {
+            scope.counter = 0;
+
+            scope.$$postDigest(function () {
+                scope.counter++;
+            });
+
+            expect(scope.counter).toBe(0);
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+
+            scope.$digest();
+            expect(scope.counter).toBe(1);
+        });
+
+        it("will not trigger a new digest circle if change the watch value in the $$postDigest", function () {
+            scope.aValue = 'a';
+
+            scope.$watch(function (scope) {
+                return scope.aValue;
+            }, function (newValue, oldValue, scope) {
+                scope.watchedValue = newValue;
+            });
+
+            scope.$$postDigest(function () {
+                scope.aValue = "b";
+            });
+
+            scope.$digest(); // after the digest , aValue will be changed
+            expect(scope.watchedValue).toBe('a');
+            expect(scope.aValue).toBe('b');
+
+            // trigger a new digest , watchedValue will be catched
+            scope.$digest(); // after the digest , aValue will be changed
+            expect(scope.watchedValue).toBe('b');
+        });
+
     });
 });

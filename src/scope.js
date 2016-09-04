@@ -13,6 +13,7 @@ function Scope() {
     this.$$asyncApplyQueue = [];
     this.$$asyncApplyId = null;
     this.$$phase = null;
+    this.$$postDigestQueue = [];
 }
 
 function initWatchVal() {
@@ -78,6 +79,9 @@ Scope.prototype.$digest = function () {
         }
     }while(dirty || this.$$asyncQueue.length);
 
+    while(self.$$postDigestQueue.length){
+        self.$$postDigestQueue.shift()();
+    }
     this.$clearPhase();
 };
 
@@ -184,4 +188,9 @@ Scope.prototype.$$flushApplyAsync = function () {
         self.$$asyncApplyQueue.shift()();
     };
     self.$$asyncApplyId = null;
+};
+
+
+Scope.prototype.$$postDigest = function (postFunction) {
+    this.$$postDigestQueue.push(postFunction);
 };
