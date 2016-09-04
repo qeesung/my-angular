@@ -39,16 +39,21 @@ Scope.prototype.$$digestOnce = function () {
     var dirty = false;
     var newValue, oldValue;
     _.forEach(this.$$watchers, function (watcher) {
-        newValue = watcher.watchFn(self);
-        oldValue = watcher.last;
-        if(!self.$$areEqual(newValue, oldValue, watcher.isBaseValue)){ // here only compare the object reference, not the value
-            self.$$lastDirtyWatch = watcher;
-            watcher.last = (watcher.isBaseValue ? _.cloneDeep(newValue): newValue); // if not deep clone the newValue, the newValue and oldValue will always equal, because they are same object
-            watcher.listenerFn(newValue, (oldValue === initWatchVal ? newValue: oldValue), self);
-            dirty = true;
+        try{
+            newValue = watcher.watchFn(self);
+            oldValue = watcher.last;
+            if(!self.$$areEqual(newValue, oldValue, watcher.isBaseValue)){ // here only compare the object reference, not the value
+                self.$$lastDirtyWatch = watcher;
+                watcher.last = (watcher.isBaseValue ? _.cloneDeep(newValue): newValue); // if not deep clone the newValue, the newValue and oldValue will always equal, because they are same object
+                watcher.listenerFn(newValue, (oldValue === initWatchVal ? newValue: oldValue), self);
+                dirty = true;
+            }
+            else if(self.$$lastDirtyWatch === watcher){
+                return false;
+            }
         }
-        else if(self.$$lastDirtyWatch === watcher){
-            return false;
+        catch(e){
+            console.log(e);
         }
     });
     return dirty;
