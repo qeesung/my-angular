@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/qeesung/my-angular.svg?branch=master)](https://travis-ci.org/qeesung/my-angular)
+
 # my-angular
 this is my personal angular js repo
 
