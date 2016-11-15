@@ -3,3 +3,10 @@ sudo: false
 node_js:
   - '6.6.0'
   
+notifications:
+  email:
+    recipients:
+      - 1245712564@qq.com
+      - qinshicheng@huawei.com
+    on_success: always
+    on_failure: always
