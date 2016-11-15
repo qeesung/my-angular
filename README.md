@@ -29,3 +29,4 @@ karma start
 ```
 
 a directory named 'coverage' would be created, and coverage reports would be in the directory
+
